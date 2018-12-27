@@ -2,7 +2,8 @@
 
 import configparser
 
-from tkinter import Tk, Frame, Label, Menu, Entry, PhotoImage, Button, Toplevel
+from tkinter import Tk, Frame, Label, Menu, Entry, PhotoImage, Button, Toplevel, Listbox
+from tkinter.ttk import Combobox
 from random import randint
 
 
@@ -129,12 +130,55 @@ class MainWindow(Frame):
 
 
 def show_config_window(parent):
-    t = Toplevel(parent)
-    t.wm_title("Math tricks trainer settimns")
+    tl_window = Toplevel(parent)
+    tl_window.wm_title("Math tricks trainer settimns")
     imgicon = PhotoImage(file="calc.png")
-    t.tk.call('wm', 'iconphoto', t._w, imgicon)
-    label_conf = Label(t, text="This is window")
-    label_conf.pack(side="top", fill="both", expand=True, padx=100, pady=100)
+    tl_window.tk.call('wm', 'iconphoto', tl_window._w, imgicon)
+
+    tl_top_frame = Frame(tl_window)
+    tl_top_frame.pack(side="top")
+
+    tl_bottom_frame = Frame(tl_window)
+    tl_bottom_frame.pack(side="bottom")
+
+    tl_label_n1 = Label(tl_top_frame, text="first number: ")
+    tl_label_n1.grid(row=0, column=0)
+
+    tl_label_n11 = Label(tl_top_frame, text="from")
+    tl_label_n11.grid(row=0, column=1)
+    tl_entry_n11 = Entry(tl_top_frame, width=20)
+    tl_entry_n11.grid(row=0, column=2)
+
+    tl_label_n12 = Label(tl_top_frame, text="to")
+    tl_label_n12.grid(row=0, column=3)
+    tl_entry_n12 = Entry(tl_top_frame, width=20)
+    tl_entry_n12.grid(row=0, column=4)
+
+
+    tl_label_n2 = Label(tl_top_frame, text="second number: ")
+    tl_label_n2.grid(row=1, column=0, sticky='ew')
+
+    tl_label_n21 = Label(tl_top_frame, text="from")
+    tl_label_n21.grid(row=1, column=1, sticky='ew')
+    tl_entry_n21 = Entry(tl_top_frame, width=20)
+    tl_entry_n21.grid(row=1, column=2, sticky='ew')
+
+    tl_label_n22 = Label(tl_top_frame, text="to")
+    tl_label_n22.grid(row=1, column=3, sticky='ew')
+    tl_entry_n22 = Entry(tl_top_frame, width=20)
+    tl_entry_n22.grid(row=1, column=4, sticky='ew')
+
+    tl_combobox_label = Label(tl_top_frame, text="select math operation: ")
+    tl_combobox_label.grid(row=2, column=0, sticky='ew')
+    list_math_operations = ["Сумма (+)", "Разность (-)", "Умножение (*)", "Деление (/)", "Возведение в степень (^)"]
+    tl_combobox_math_operation = Combobox(tl_top_frame, values=list_math_operations)
+    tl_combobox_math_operation.grid(row=2, column=1, columnspan=4, sticky="ew")
+    tl_combobox_math_operation.current(0)
+
+    tl_save_cencel = Button(tl_bottom_frame, text="Save", width=10)
+    tl_save_cencel.grid(row=0, column=0) 
+    tl_button_cencel = Button(tl_bottom_frame, text="Cencel", width=10, command=lambda: tl_window.destroy())
+    tl_button_cencel.grid(row=0, column=1) 
 
 
 if __name__ == "__main__":
