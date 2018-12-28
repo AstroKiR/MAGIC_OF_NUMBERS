@@ -3,21 +3,21 @@
 import configparser
 
 from tkinter import Tk, Frame, Label, Menu, Entry, PhotoImage, Button, Toplevel, Listbox
-from tkinter.ttk import Combobox
+from tkinter.ttk import Combobox, Spinbox
 from random import randint
 
 
 class MainWindow(Frame):
-    """ 
+    """
         Class of main window
     """
     def __init__(self, *args, **kwargs):
         Frame.__init__(self, *args, **kwargs)
-        self.n1_conf = [0, 0] 
+        self.n1_conf = [0, 0]
         self.n2_conf = [0, 0]
-        self.n1 = 0 
+        self.n1 = 0
         self.n2 = 0
-        self.math_operation_conf = 1 
+        self.math_operation_conf = 1
         self.question_block()
         self.note_block()
         self.answer_block()
@@ -65,7 +65,7 @@ class MainWindow(Frame):
         bottom_frame.grid_columnconfigure(0, weight=1)
         bottom_frame.grid_columnconfigure(1, weight=1)
         bottom_frame.grid_columnconfigure(2, weight=1)
-        btn_1 = Button(bottom_frame, text="NEW", font=("Arial", 16), fg="#838384", 
+        btn_1 = Button(bottom_frame, text="NEW", font=("Arial", 16), fg="#838384",
                 command=self.generate_question)
         btn_1.grid(row=1, column=0, sticky="we")
         btn_2 = Button(bottom_frame, text="CHECK", font=("Arial", 16), fg="#838384",
@@ -129,7 +129,37 @@ class MainWindow(Frame):
         self.entry_answer.delete(0, "end")
 
 
+
 def show_config_window(parent):
+
+    path = "./magic.conf"
+    config = configparser.ConfigParser()
+    config.read(path)
+
+    def tl_save_preferences():
+        if tl_spinbox_n11.get().isdigit():
+            config.set("MAGIC", "first_number_from", tl_spinbox_n11.get())
+        if tl_spinbox_n12.get().isdigit():
+            config.set("MAGIC", "first_number_to", tl_spinbox_n12.get())
+        if tl_spinbox_n21.get().isdigit():
+            config.set("MAGIC", "second_number_from", tl_spinbox_n21.get())
+        if tl_spinbox_n22.get().isdigit():
+            config.set("MAGIC", "second_number_to", tl_spinbox_n22.get())
+
+        if tl_combobox_math_operation.get() == "Сумма (+)":
+            config.set("MAGIC", "math_operation", '1')
+        elif tl_combobox_math_operation.get() == "Разность (-)":
+            config.set("MAGIC", "math_operation", '2')
+        elif tl_combobox_math_operation.get() == "Умножение (*)":
+            config.set("MAGIC", "math_operation", '3')
+        elif tl_combobox_math_operation.get() == "Деление (/)":
+            config.set("MAGIC", "math_operation", '4')
+        elif tl_combobox_math_operation.get() == "Возведение в степень (^)":
+            config.set("MAGIC", "math_operation", '5')
+
+        with open(path, "w") as config_file:
+            config.write(config_file)
+
     tl_window = Toplevel(parent)
     tl_window.wm_title("Math tricks trainer settimns")
     imgicon = PhotoImage(file="calc.png")
@@ -146,39 +176,44 @@ def show_config_window(parent):
 
     tl_label_n11 = Label(tl_top_frame, text="from")
     tl_label_n11.grid(row=0, column=1)
-    tl_entry_n11 = Entry(tl_top_frame, width=20)
-    tl_entry_n11.grid(row=0, column=2)
+    tl_spinbox_n11 = Spinbox(tl_top_frame, from_=0, to=1000000000)
+    tl_spinbox_n11.grid(row=0, column=2)
 
     tl_label_n12 = Label(tl_top_frame, text="to")
     tl_label_n12.grid(row=0, column=3)
-    tl_entry_n12 = Entry(tl_top_frame, width=20)
-    tl_entry_n12.grid(row=0, column=4)
-
+    tl_spinbox_n12 = Spinbox(tl_top_frame, from_=0, to=1000000000)
+    tl_spinbox_n12.grid(row=0, column=4)
 
     tl_label_n2 = Label(tl_top_frame, text="second number: ")
     tl_label_n2.grid(row=1, column=0, sticky='ew')
 
     tl_label_n21 = Label(tl_top_frame, text="from")
     tl_label_n21.grid(row=1, column=1, sticky='ew')
-    tl_entry_n21 = Entry(tl_top_frame, width=20)
-    tl_entry_n21.grid(row=1, column=2, sticky='ew')
+    tl_spinbox_n21 = Spinbox(tl_top_frame, from_=0, to=1000000000)
+    tl_spinbox_n21.grid(row=1, column=2, sticky='ew')
 
     tl_label_n22 = Label(tl_top_frame, text="to")
     tl_label_n22.grid(row=1, column=3, sticky='ew')
-    tl_entry_n22 = Entry(tl_top_frame, width=20)
-    tl_entry_n22.grid(row=1, column=4, sticky='ew')
+    tl_spinbox_n22 = Spinbox(tl_top_frame, from_=0, to=1000000000)
+    tl_spinbox_n22.grid(row=1, column=4, sticky='ew')
 
     tl_combobox_label = Label(tl_top_frame, text="select math operation: ")
     tl_combobox_label.grid(row=2, column=0, sticky='ew')
-    list_math_operations = ["Сумма (+)", "Разность (-)", "Умножение (*)", "Деление (/)", "Возведение в степень (^)"]
+    list_math_operations = [
+        "Сумма (+)",
+        "Разность (-)",
+        "Умножение (*)",
+        "Деление (/)",
+        "Возведение в степень (^)"
+    ]
     tl_combobox_math_operation = Combobox(tl_top_frame, values=list_math_operations)
     tl_combobox_math_operation.grid(row=2, column=1, columnspan=4, sticky="ew")
     tl_combobox_math_operation.current(0)
 
-    tl_save_cencel = Button(tl_bottom_frame, text="Save", width=10)
-    tl_save_cencel.grid(row=0, column=0) 
+    tl_save_cencel = Button(tl_bottom_frame, text="Save", width=10, command=lambda: tl_save_preferences())
+    tl_save_cencel.grid(row=0, column=0)
     tl_button_cencel = Button(tl_bottom_frame, text="Cencel", width=10, command=lambda: tl_window.destroy())
-    tl_button_cencel.grid(row=0, column=1) 
+    tl_button_cencel.grid(row=0, column=1)
 
 
 if __name__ == "__main__":
