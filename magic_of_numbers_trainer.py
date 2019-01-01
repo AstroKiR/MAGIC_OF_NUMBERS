@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 
 import configparser
+import re
 
 from tkinter import Tk, Frame, Label, Menu, Entry, PhotoImage, Button, Toplevel, Listbox, Spinbox
 from tkinter.ttk import Combobox
 from random import randint
 
 
+
 class TkMathTrickTrainer(Tk):
-    ''' Класс обертка 
+    """ Класс обертка 
         самого приложения
-    '''     
+    """     
     def __init__(self, *args, **kwargs):
         ''' Конструктор '''
         Tk.__init__(self, *args, **kwargs)
@@ -22,6 +24,9 @@ class TkMathTrickTrainer(Tk):
         self.main_window.pack()
 
     def _show_preference_window(self):
+        ''' Метод отображает единственное окно настроек,
+            если окно свернуто, оно разворачивается и на нем устанавливается фокус
+        '''
         if self.preference_window is None or not self.preference_window.winfo_exists():
             self.preference_window = PreferenceWindow()
         else:
@@ -39,9 +44,8 @@ class TkMathTrickTrainer(Tk):
 
         
 class PreferenceWindow(Toplevel):
-    ''' Класс обертка
-        окна настройки
-    '''
+    """ Класс обертка окна настройки """
+
     def __init__(self, *args, **kwargs):
         ''' Конструктор '''
         Toplevel.__init__(self, *args, **kwargs)
@@ -68,14 +72,14 @@ class PreferenceWindow(Toplevel):
         # блок 1-го числа С
         tl_label_n11 = Label(tl_top_frame, text="from")
         tl_label_n11.grid(row=0, column=1)
-        self.spinbox_n11 = Spinbox(tl_top_frame, from_=0, to=1000000000)
-        self.spinbox_n11.grid(row=0, column=2)
+        self.entry_n11 = Entry(tl_top_frame)
+        self.entry_n11.grid(row=0, column=2)
 
         # блок 1-го числа ПО
         tl_label_n12 = Label(tl_top_frame, text="to")
         tl_label_n12.grid(row=0, column=3)
-        self.spinbox_n12 = Spinbox(tl_top_frame, from_=0, to=1000000000)
-        self.spinbox_n12.grid(row=0, column=4)
+        self.entry_n12 = Entry(tl_top_frame)
+        self.entry_n12.grid(row=0, column=4)
 
         tl_label_n2 = Label(tl_top_frame, text="second number: ")
         tl_label_n2.grid(row=1, column=0, sticky='ew')
@@ -106,6 +110,9 @@ class PreferenceWindow(Toplevel):
         self.combobox_math_operation.grid(row=2, column=1, columnspan=4, sticky="ew")
         self.combobox_math_operation.current(0)
 
+        self.tl_info_label = Label(tl_top_frame, text="")
+        self.tl_info_label.grid(row=3, column=0, columnspan=5)
+
         # кнопка Сохранить
         tl_save_cencel = Button(tl_bottom_frame, text="Save", width=10, command=lambda: self._set_preferences())
         tl_save_cencel.grid(row=0, column=0)
@@ -115,21 +122,21 @@ class PreferenceWindow(Toplevel):
         tl_button_cencel.grid(row=0, column=1)
 
     def _get_preferences(self):
+        ''' Метод считывает файла magic.conf и заполняет поля при открытии окна настроек '''
+
+        # данные из magic.conf
         config = configparser.ConfigParser()
         config.read("magic.conf")
-
-        self.spinbox_n11.delete(0, "end")
-        self.spinbox_n11.insert(0, config["MAGIC"]["first_number_from"])
-
-        self.spinbox_n12.delete(0, "end")
-        self.spinbox_n12.insert(0, config["MAGIC"]["first_number_to"])
-
+        
+        # наполнение полей текущими данными
+        self.entry_n11.delete(0, "end")
+        self.entry_n11.insert(0, config["MAGIC"]["first_number_from"])
+        self.entry_n12.delete(0, "end")
+        self.entry_n12.insert(0, config["MAGIC"]["first_number_to"])
         self.spinbox_n21.delete(0, "end")
         self.spinbox_n21.insert(0, config["MAGIC"]["second_number_from"])
-
         self.spinbox_n22.delete(0, "end")
         self.spinbox_n22.insert(0, config["MAGIC"]["second_number_to"])
-
         self.combobox_math_operation.delete(0, "end")
         if config["MAGIC"]["math_operation"] == '1':
             self.combobox_math_operation.insert(0, "Сумма (+)")
@@ -145,40 +152,54 @@ class PreferenceWindow(Toplevel):
             self.combobox_math_operation.insert(0, "Сумма (+)")
 
     def _set_preferences(self):
-        path = "./magic.conf"
-        config = configparser.ConfigParser()
-        config.read(path)
+        ''' Метод сохраняет новые настройки в файл magic.conf '''
 
-        if self.spinbox_n11.get().isdigit():
-            config.set("MAGIC", "first_number_from", self.spinbox_n11.get())
-        if self.spinbox_n12.get().isdigit():
-            config.set("MAGIC", "first_number_to", self.spinbox_n12.get())
-        if self.spinbox_n21.get().isdigit():
-            config.set("MAGIC", "second_number_from", self.spinbox_n21.get())
-        if self.spinbox_n22.get().isdigit():
-            config.set("MAGIC", "second_number_to", self.spinbox_n22.get())
+        if self._validate_fields():
 
-        if self.combobox_math_operation.get() == "Сумма (+)":
-            config.set("MAGIC", "math_operation", '1')
-        elif self.combobox_math_operation.get() == "Разность (-)":
-            config.set("MAGIC", "math_operation", '2')
-        elif self.combobox_math_operation.get() == "Умножение (*)":
-            config.set("MAGIC", "math_operation", '3')
-        elif self.combobox_math_operation.get() == "Деление (/)":
-            config.set("MAGIC", "math_operation", '4')
-        elif self.combobox_math_operation.get() == "Возведение в степень (^)":
-            config.set("MAGIC", "math_operation", '5')
+            path = "./magic.conf"
+            config = configparser.ConfigParser()
+            config.read(path)
 
-        with open(path, "w") as config_file:
-            config.write(config_file)
+            config.set("MAGIC", "first_number_from", self.entry_n11.get())
+            config.set("MAGIC", "first_number_to", self.entry_n12.get())
 
-        self._get_preferences()
+            if self.spinbox_n21.get().isdigit():
+                config.set("MAGIC", "second_number_from", self.spinbox_n21.get())
+            if self.spinbox_n22.get().isdigit():
+                config.set("MAGIC", "second_number_to", self.spinbox_n22.get())
+
+            if self.combobox_math_operation.get() == "Сумма (+)":
+                config.set("MAGIC", "math_operation", '1')
+            elif self.combobox_math_operation.get() == "Разность (-)":
+                config.set("MAGIC", "math_operation", '2')
+            elif self.combobox_math_operation.get() == "Умножение (*)":
+                config.set("MAGIC", "math_operation", '3')
+            elif self.combobox_math_operation.get() == "Деление (/)":
+                config.set("MAGIC", "math_operation", '4')
+            elif self.combobox_math_operation.get() == "Возведение в степень (^)":
+                config.set("MAGIC", "math_operation", '5')
+
+            with open(path, "w") as config_file:
+                config.write(config_file)
+
+            self._get_preferences()
+
+    def _validate_fields(self):
+        
+        entry_n11 = re.match("[-+]?\d+$", self.entry_n11.get())
+        entry_n12 = re.match("[-+]?\d+$", self.entry_n12.get())
+
+        if entry_n11 and entry_n12 and int(self.entry_n12.get()) > int(self.entry_n11.get()): 
+            self.tl_info_label.configure(text="Сохранено")
+            return True
+        else:
+            self.tl_info_label.configure(text="Проверьте первый диапазон")
+            return False
 
 
 class MainWindow(Frame):
-    ''' Класс описывает
-        главное окно приложения
-    '''
+    """ Класс описывает главное окно приложения """
+
     def __init__(self, *args, **kwargs):
         Frame.__init__(self, *args, **kwargs)
         self.n1_conf = [0, 0]
@@ -294,7 +315,6 @@ class MainWindow(Frame):
     def clear_entry(self, event):
         self.entry_answer.delete(0, "end")
     
-
 
 if __name__ == "__main__":
     root = TkMathTrickTrainer()
