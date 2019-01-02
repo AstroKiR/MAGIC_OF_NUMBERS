@@ -127,11 +127,8 @@ class PREFERENCE_WINDOW(Toplevel):
 
             config.set("MAGIC", "first_number_from", self.entry_n11.get())
             config.set("MAGIC", "first_number_to", self.entry_n12.get())
-
-            if self.entry_n21.get().isdigit():
-                config.set("MAGIC", "second_number_from", self.entry_n21.get())
-            if self.entry_n22.get().isdigit():
-                config.set("MAGIC", "second_number_to", self.entry_n22.get())
+            config.set("MAGIC", "second_number_from", self.entry_n21.get())
+            config.set("MAGIC", "second_number_to", self.entry_n22.get())
 
             if self.combobox_math_operation.get() == "Сумма (+)":
                 config.set("MAGIC", "math_operation", '1')
@@ -188,6 +185,7 @@ class PREFERENCE_WINDOW(Toplevel):
                 flag = False 
                 result_string += "Второе число второго диапазона должно быль больше первого\n"
         except ValueError:
+            result_string += "ValueError\n"
             flag = False
 
 
