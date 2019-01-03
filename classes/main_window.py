@@ -34,23 +34,23 @@ class MAIN_WINDOW(Frame):
     def question_block(self):
         question_frame = Frame(self)
         question_frame.pack(side="top", fill="y")
-        self.string_with_question = Label(question_frame, font=("Arial", 50))
+        self.string_with_question = Label(question_frame)
         self.string_with_question.grid(row=0, column=0)
 
     def note_block(self):
         note_frame = Frame(self, bg="blue")
         note_frame.pack()
-        self.label_feedback = Label(note_frame, text="ENTER YOUR ANSWER", font=("Arial", 20), fg="#838384")
+        self.label_feedback = Label(note_frame, text="ENTER YOUR ANSWER")
         self.label_feedback.pack()
 
     def answer_block(self):
         answer_frame = Frame(self)
         answer_frame.pack(padx=5, pady=10)
         self.entry_answer = Entry(answer_frame)
-        self.entry_answer.config(bg="white", font=("Arial", 20), width=10)
+        self.entry_answer.config(bg="white")
         self.entry_answer.grid(sticky="we", row=0, column=0)
         button_clear_entry = Button(answer_frame, text="\u2A02")
-        button_clear_entry.config(borderwidth=0, font=("Arial", 13), fg="#838384")
+        button_clear_entry.config(borderwidth=0)
         button_clear_entry.grid(sticky="we", row=0, column=1)
         button_clear_entry.bind("<Button-1>", self.clear_entry)
         answer_frame.grid_columnconfigure(0, weight=200)

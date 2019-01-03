@@ -32,7 +32,7 @@ class PREFERENCE_WINDOW(Toplevel):
         tl_label_n1 = Label(tl_top_frame, text="first number: ")
         tl_label_n1.grid(row=0, column=0)
 
-        validate_entry_field = (self.register(self._local_validate_field), "%i", "%P", "%S")
+        validate_entry_field = (self.register(self._local_validate_entry), "%i", "%P", "%S")
 
         # блок 1-го числа С
         tl_label_n11 = Label(tl_top_frame, text="from")
@@ -62,8 +62,12 @@ class PREFERENCE_WINDOW(Toplevel):
         self.entry_n22.grid(row=1, column=4, sticky='ew')
         
         # блок с математическими операциями
+         
+        validate_combobox_field = (self.register(self._local_validate_combobox), "%i", "%P", "%S")
+
         tl_combobox_label = Label(tl_top_frame, text="select math operation: ")
         tl_combobox_label.grid(row=2, column=0, sticky='ew')
+
         list_math_operations = [
             "Сумма (+)",
             "Разность (-)",
@@ -71,7 +75,14 @@ class PREFERENCE_WINDOW(Toplevel):
             "Деление (/)",
             "Возведение в степень (^)"
         ]
-        self.combobox_math_operation = Combobox(tl_top_frame, values=list_math_operations)
+
+        self.combobox_math_operation = Combobox(
+                tl_top_frame, 
+                values=list_math_operations, 
+                validate="all",
+                validatecommand=validate_combobox_field
+        )
+
         self.combobox_math_operation.grid(row=2, column=1, columnspan=4, sticky="ew")
         self.combobox_math_operation.current(0)
 
@@ -146,9 +157,18 @@ class PREFERENCE_WINDOW(Toplevel):
 
             self._get_preferences()
 
-    def _local_validate_field(self, i, P, S):
-        ''' Метод локально валидирует поле при вводе символов '''
+    def _local_validate_entry(self, i, P, S):
+        ''' Метод локально валидирует текстовое поле при вводе символов '''
         if re.match("[-+]?\d*$", P) or P == '':
+            return True
+        else:
+            return False
+
+    def _local_validate_combobox(self, i, P, S):
+        ''' Метод локально валидирует комбобокс, 
+            точнее дает выбрать только значения из выпадающео списка
+        '''
+        if P in ["Сумма (+)", "Разность (-)","Умножение (*)","Деление (/)","Возведение в степень (^)"]:
             return True
         else:
             return False
@@ -185,9 +205,8 @@ class PREFERENCE_WINDOW(Toplevel):
                 flag = False 
                 result_string += "Второе число второго диапазона должно быль больше первого\n"
         except ValueError:
-            result_string += "ValueError\n"
+            # result_string += "ValueError\n"
             flag = False
-
 
         if flag:
             self.tl_info_label.configure(text="Сохранено")
