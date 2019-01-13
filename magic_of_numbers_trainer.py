@@ -20,12 +20,10 @@ class TkMathTrickTrainer(Tk):
         self.preference_window = None
         imgicon = PhotoImage(file="calc.png")
         self.tk.call('wm', 'iconphoto', self._w, imgicon)
-
         self.style = CUSTOM_STYLE()
-
         self._main_menu()
         self.main_window = MAIN_WINDOW(self)
-        self.main_window.pack()
+        self.main_window.pack(expand="100", fill="both")
 
     def _show_preference_window(self):
         ''' Метод отображает единственное окно настроек,
@@ -43,9 +41,10 @@ class TkMathTrickTrainer(Tk):
 
     def _main_menu(self):
         ''' Метод формирует верхнее меню приложения '''
-        main_menu = Menu(bd=1)
+        main_menu = Menu(bd=0, activebackground="#93CEE9")
         self.configure(menu=main_menu)
-        main_menu.add_command(label="Настройки", font=("Arial", 10), command=lambda: self._show_preference_window())
+        main_menu.add_command(label="Настройка", font=("Arial", 10), command=lambda: self._show_preference_window())
+        # main_menu.add_command(label="Справка", font=("Arial", 10), command=self.quit)
         
 
 if __name__ == "__main__":

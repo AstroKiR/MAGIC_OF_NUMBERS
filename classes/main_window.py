@@ -38,7 +38,7 @@ class MAIN_WINDOW(Frame):
         ''' Метод отрисовывает блок с примером '''
         question_frame = Frame(self)
         question_frame.pack(side="top", fill="y")
-        self.string_with_question = Label(question_frame)
+        self.string_with_question = Label(question_frame, style="QB.TLabel")
         self.string_with_question.grid(row=0, column=0)
 
     def _note_block(self):
@@ -49,7 +49,7 @@ class MAIN_WINDOW(Frame):
         self.label_feedback.pack()
 
     def _answer_block(self):
-        ''' Метод отрисовывает блок вводи ответа '''
+        ''' Метод отрисовывает блок ввода ответа '''
         answer_frame = Frame(self)
         answer_frame.pack(padx=5, pady=10)
         self.entry_answer = Entry(answer_frame)

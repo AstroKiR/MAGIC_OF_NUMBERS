@@ -77,10 +77,10 @@ class PREFERENCE_WINDOW(Toplevel):
         ]
 
         self.combobox_math_operation = Combobox(
-                tl_top_frame, 
-                values=list_math_operations, 
-                validate="all",
-                validatecommand=validate_combobox_field
+            tl_top_frame, 
+            values=list_math_operations, 
+            validate="all",
+            validatecommand=validate_combobox_field
         )
 
         self.combobox_math_operation.grid(row=2, column=1, columnspan=4, sticky="ew")
@@ -113,7 +113,9 @@ class PREFERENCE_WINDOW(Toplevel):
         self.entry_n21.insert(0, config["MAGIC"]["second_number_from"])
         self.entry_n22.delete(0, "end")
         self.entry_n22.insert(0, config["MAGIC"]["second_number_to"])
-        self.combobox_math_operation.delete(0, "end")
+
+        self.combobox_math_operation.set("")
+
         if config["MAGIC"]["math_operation"] == '1':
             self.combobox_math_operation.insert(0, "Сумма (+)")
         elif config["MAGIC"]["math_operation"] == '2':
@@ -140,7 +142,6 @@ class PREFERENCE_WINDOW(Toplevel):
             config.set("MAGIC", "first_number_to", self.entry_n12.get())
             config.set("MAGIC", "second_number_from", self.entry_n21.get())
             config.set("MAGIC", "second_number_to", self.entry_n22.get())
-
             if self.combobox_math_operation.get() == "Сумма (+)":
                 config.set("MAGIC", "math_operation", '1')
             elif self.combobox_math_operation.get() == "Разность (-)":
@@ -169,8 +170,10 @@ class PREFERENCE_WINDOW(Toplevel):
             точнее дает выбрать только значения из выпадающео списка
         '''
         if P in ["Сумма (+)", "Разность (-)","Умножение (*)","Деление (/)","Возведение в степень (^)"]:
+            print("t", P)
             return True
         else:
+            print("f",P)
             return False
 
     def _total_validate_fields(self):
