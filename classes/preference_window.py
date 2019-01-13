@@ -2,8 +2,8 @@
 import configparser
 import re
 
-from tkinter import Button, Entry, Frame, Label, PhotoImage, Toplevel
-from tkinter.ttk import Combobox
+from tkinter import PhotoImage, Toplevel
+from tkinter.ttk import * 
 
 
 class PREFERENCE_WINDOW(Toplevel):
@@ -30,7 +30,7 @@ class PREFERENCE_WINDOW(Toplevel):
         tl_bottom_frame.pack(side="bottom")
 
         tl_label_n1 = Label(tl_top_frame, text="first number: ")
-        tl_label_n1.grid(row=0, column=0)
+        tl_label_n1.grid(row=0, column=0, sticky="ew")
 
         validate_entry_field = (self.register(self._local_validate_entry), "%i", "%P", "%S")
 

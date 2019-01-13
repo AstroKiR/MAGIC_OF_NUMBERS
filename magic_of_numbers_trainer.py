@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 import configparser
+import random
 import re
 
-from tkinter import Tk, Frame, Label, Menu, Entry, PhotoImage, Button, Toplevel, Listbox, Spinbox
+from tkinter import Tk, PhotoImage, Menu
+from tkinter.ttk import *
 
-from classes import MAIN_WINDOW, PREFERENCE_WINDOW
+from classes import MAIN_WINDOW, PREFERENCE_WINDOW, CUSTOM_STYLE
 
 
 class TkMathTrickTrainer(Tk):
@@ -18,6 +20,9 @@ class TkMathTrickTrainer(Tk):
         self.preference_window = None
         imgicon = PhotoImage(file="calc.png")
         self.tk.call('wm', 'iconphoto', self._w, imgicon)
+
+        self.style = CUSTOM_STYLE()
+
         self._main_menu()
         self.main_window = MAIN_WINDOW(self)
         self.main_window.pack()
@@ -46,6 +51,6 @@ class TkMathTrickTrainer(Tk):
 if __name__ == "__main__":
     root = TkMathTrickTrainer()
     root.title("Счет в уме")
-    root.minsize(600, 180)
+    # root.minsize(600, 180)
     root.mainloop()
 
